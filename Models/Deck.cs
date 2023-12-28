@@ -40,5 +40,10 @@ namespace HoldemOddsAPI.Models
             cards.RemoveRange(0,2); //Remove the dealt cards from the deck
             return hand;
         }
+
+        public List<Card> GetAllCards()
+        {
+            return new List<Card>(cards); //Return a copy of the cards list
+        }
     }
 }

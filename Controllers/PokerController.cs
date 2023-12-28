@@ -16,5 +16,22 @@ namespace HoldemOddsAPI.Controllers
             var hand = new Hand(card1, card2);
             return Ok(hand.ToString());
         }
+
+        [HttpGet("shuffle")]
+        public IActionResult ShuffleDeck()
+        {
+            var deck = new Deck();
+            deck.Shuffle();
+            var cardStrings = deck.GetAllCards().Select(card=>card.ToString()).ToList();
+            return Ok(cardStrings);
+        }
+
+        [HttpGet("deal")]
+        public IActionResult DealHand()
+        {
+            var deck = new Deck();
+            var hand = deck.DealHand();
+            return Ok(hand.ToString());
+        }
     }
 }
