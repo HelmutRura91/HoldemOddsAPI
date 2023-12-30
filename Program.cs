@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
 using HoldemOddsAPI.Models;
+using HoldemOddsAPI.Services;
 
 namespace HoldemOddsAPI
 {
@@ -12,6 +13,7 @@ namespace HoldemOddsAPI
             var builder = WebApplication.CreateBuilder(args);
             //Add services to the container
             builder.Services.AddControllers();
+            builder.Services.AddScoped<DeckService>();
 
             var app = builder.Build();
 
