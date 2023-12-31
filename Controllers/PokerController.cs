@@ -59,5 +59,6 @@ namespace HoldemOddsAPI.Controllers
                 return BadRequest(ex.Message);
             }            
         }
+
     }
 }
