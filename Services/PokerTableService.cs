@@ -59,7 +59,7 @@ namespace HoldemOddsAPI.Services
             return playerHands;
         }
             
-
+            
         public void PlayFlop()
         {
             //deal the flop after the first round of betting
