@@ -11,9 +11,10 @@ namespace HoldemOddsAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            //Add services to the container
+            //Add services to the Dependency Injection container
             builder.Services.AddControllers();
             builder.Services.AddScoped<DeckService>();
+            builder.Services.AddScoped<PokerTableService>();
 
             var app = builder.Build();
 
