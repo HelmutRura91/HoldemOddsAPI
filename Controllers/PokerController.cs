@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using HoldemOddsAPI.Models;
 using HoldemOddsAPI.Services;
-using HoldemOddsAPI.Extensions;
 
 namespace HoldemOddsAPI.Controllers
 {
@@ -18,26 +16,34 @@ namespace HoldemOddsAPI.Controllers
             _pokerTableService = pokerTableService;
         }
 
-
-        [HttpGet("start-and-deal/{numberOfPlayers}")]
-        public IActionResult StartGameAndDealHands(int numberOfPlayers)
+        [HttpPost("start-game/{numberOfPlayers}")]
+        public IActionResult StartGame(int numberOfPlayers)
         {
             try
             {
-                // Start the new game
-                _pokerTableService.StartNewGame(numberOfPlayers);
-
-                // Deal initial hands
-                var playerHands = _pokerTableService.DealInitialHands();
-                var handsInfo = playerHands.Select(ph => new
-                {
-                    Player = ph.Key.Id,
-                    Hand = ph.Value.ToString()
-                });
-
+                int gameId = _pokerTableService.StartNewGame(numberOfPlayers);
                 return Ok(new
                 {
-                    Message = $"Game started with {numberOfPlayers} players and initial hands dealt.",
+                    Message = $"Game started with {numberOfPlayers} players.",
+                    GameId = gameId
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("deal-initial-hands/{gameId}")]
+        public IActionResult DealInitialHands(int gameId)
+        {
+            try
+            {
+                var playerHands = _pokerTableService.DealInitialHands(gameId);
+                var handsInfo = _pokerTableService.GetFormattedPlayerHands(gameId);
+                return Ok(new 
+                { 
+                    Message = "Initial hands dealt to all players.",
                     Hands = handsInfo
                 });
             }
@@ -47,13 +53,18 @@ namespace HoldemOddsAPI.Controllers
             }
         }
 
-        [HttpGet("start-game/{numberOfPlayers}")]
-        public IActionResult StartGame(int numberOfPlayers)
+        [HttpGet("deal-flop/{gameId}")]
+        public IActionResult DealFlop(int gameId)
         {
             try
             {
-                _pokerTableService.StartNewGame(numberOfPlayers);
-                return Ok($"Game started with {numberOfPlayers} players.");
+                var flopCards = _pokerTableService.DealFlop(gameId);
+                var handsInfo = _pokerTableService.GetFormattedPlayerHands(gameId);
+                return Ok(new
+                {
+                    Flop = flopCards.Select(c => c.ToString()),
+                    Hands = handsInfo
+                });
             }
             catch (Exception ex)
             {
@@ -61,22 +72,39 @@ namespace HoldemOddsAPI.Controllers
             }
         }
 
-        [HttpGet("deal-initial-hands")]
-        public IActionResult DealInitialHands()
+        [HttpGet("deal-turn/{gameId}")]
+        public IActionResult DealTurn(int gameId)
         {
-            if (!_pokerTableService.IsGameStarted)
-            {
-                return BadRequest("Game has not bedd started.");
-            }
             try
             {
-                var playerHands = _pokerTableService.DealInitialHands();
-                var handsInfo = playerHands.Select(ph => new
-                {
-                    Player = ph.Key.Id,
-                    Hands = ph.Value.ToString()
+                var turnCard = _pokerTableService.DealTurn(gameId);
+                var communityCards = _pokerTableService.GetCommunityCards(gameId);
+                var handsInfo = _pokerTableService.GetFormattedPlayerHands(gameId);
+                return Ok(new 
+                { 
+                    CommunityCards = communityCards.Select(c=>c.ToString()),
+                    Hands = handsInfo                
                 });
-                return Ok(new { Message = "Initial hands dealt to all players.", Hands = handsInfo});
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("deal-river/{gameId}")]
+        public IActionResult DealRiver(int gameId)
+        {
+            try
+            {
+                var riverCard = _pokerTableService.DealRiver(gameId);
+                var communityCards = _pokerTableService.GetCommunityCards(gameId);
+                var handsInfo = _pokerTableService.GetFormattedPlayerHands(gameId);
+                return Ok(new 
+                { 
+                    CommunityCards = communityCards.Select(c=>c.ToString()),
+                    Hands = handsInfo
+                });
             }
             catch (Exception ex)
             {

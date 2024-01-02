@@ -15,6 +15,7 @@ namespace HoldemOddsAPI
             builder.Services.AddControllers();
             builder.Services.AddScoped<DeckService>();
             builder.Services.AddScoped<PokerTableService>();
+            builder.Services.AddSingleton<GameState>();
 
             var app = builder.Build();
 
