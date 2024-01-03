@@ -149,6 +149,11 @@ namespace HoldemOddsAPI.Services
 
             return pokerTable.CommunityCards;
         }
+
+        public void UpdateGameWithLoadedState(int gameId, PokerTable loadedPokerTable)
+        {
+            _gameState.AddOrUpdateGame(gameId, loadedPokerTable);
+        }
         //public void HandlePlayerAction(Player player, PlayerAction action)
         //{
         //    // handle player actions (bet, fold, raise)

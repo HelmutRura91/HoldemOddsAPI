@@ -15,7 +15,9 @@ namespace HoldemOddsAPI
             builder.Services.AddControllers();
             builder.Services.AddScoped<DeckService>();
             builder.Services.AddScoped<PokerTableService>();
+            builder.Services.AddScoped<GameStateService>();
             builder.Services.AddSingleton<GameState>();
+            builder.Services.AddSingleton<JsonLogger>(provider => new JsonLogger(@"C:\Users\npotu\source\repos\HoldemOddsAPI\Logs\logfile.json"));
 
             var app = builder.Build();
 

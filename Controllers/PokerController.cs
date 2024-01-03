@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using HoldemOddsAPI.Models;
 using HoldemOddsAPI.Services;
+using System.Text.Json;
 
 namespace HoldemOddsAPI.Controllers
 {
@@ -11,9 +12,14 @@ namespace HoldemOddsAPI.Controllers
     {
         //injecting PokerTableService into PokerController constructor
         private readonly PokerTableService _pokerTableService;
-        public PokerController(PokerTableService pokerTableService)
+        private readonly GameStateService _gameStateService;
+        private readonly JsonLogger _jsonLogger;
+        
+        public PokerController(PokerTableService pokerTableService, GameStateService gameStateService, JsonLogger jsonLogger)
         {
             _pokerTableService = pokerTableService;
+            _gameStateService = gameStateService;
+            _jsonLogger = jsonLogger;
         }
 
         [HttpPost("start-game/{numberOfPlayers}")]
@@ -30,7 +36,51 @@ namespace HoldemOddsAPI.Controllers
             }
             catch (Exception ex)
             {
+                _jsonLogger.LogError(ex);
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("save-game/{gameId}")]
+        public IActionResult SaveGame(int gameId)
+        {
+            string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            string fileName = $"GameState_{gameId}_{timestamp}.json";
+            string filePath = $@"C:\Users\npotu\source\repos\HoldemOddsAPI\SavedFiles\{fileName}";
+
+            try
+            {
+                _gameStateService.SaveGameStateToFile(gameId, filePath);
+                return Ok($"Game state for game {gameId} save successfully at {filePath}.");
+            }
+            catch (Exception ex)
+            {
+                _jsonLogger.LogError(ex);
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("load-game/{gameId}")]
+        public IActionResult LoadGame(int gameId, [FromBody] PokerTable pokerTable)
+        {
+            try
+            {
+                string gameStateJson = JsonSerializer.Serialize(pokerTable);
+                var loadedPokerTable = _gameStateService.DeserializeGameState(gameStateJson);
+                if (loadedPokerTable == null)
+                {
+                    return BadRequest("Invalid game state JSON");
+                }
+
+                // Update the game state in PokerTableService
+                _pokerTableService.UpdateGameWithLoadedState(gameId, loadedPokerTable);
+
+                return Ok("Game state loaded successfully.");
+            }
+            catch (Exception ex)
+            {
+                _jsonLogger.LogError(ex);
+                return BadRequest($"Error loading game state: {ex.Message}");
             }
         }
 
@@ -49,6 +99,7 @@ namespace HoldemOddsAPI.Controllers
             }
             catch (Exception ex)
             {
+                _jsonLogger.LogError(ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -68,6 +119,7 @@ namespace HoldemOddsAPI.Controllers
             }
             catch (Exception ex)
             {
+                _jsonLogger.LogError(ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -88,6 +140,7 @@ namespace HoldemOddsAPI.Controllers
             }
             catch (Exception ex)
             {
+                _jsonLogger.LogError(ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -108,6 +161,7 @@ namespace HoldemOddsAPI.Controllers
             }
             catch (Exception ex)
             {
+                _jsonLogger.LogError(ex);
                 return BadRequest(ex.Message);
             }
         }

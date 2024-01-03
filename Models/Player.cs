@@ -2,12 +2,13 @@
 {
     public class Player
     {
+        // I had to make the setters public, so I could deserialize JSON data into Player
         private static readonly Random random = new Random();
-        public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public Hand CurrentHand { get; private set; }
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public Hand CurrentHand { get; set; }
         public int ChipCount { get; set; }
-        public bool IsFolded { get; private set; }
+        public bool IsFolded { get; set; }
 
         // Parameterless constructor
         public Player()

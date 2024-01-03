@@ -2,8 +2,8 @@
 {
     public class Hand
     {
-        public Card Card1 { get; private set; }
-        public Card Card2 { get; private set; }
+        public Card Card1 { get; set; }
+        public Card Card2 { get; set; }
 
         public Hand(Card card1, Card card2)
         {

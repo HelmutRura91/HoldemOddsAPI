@@ -1,13 +1,22 @@
 ﻿using System.Security.Cryptography.X509Certificates;
+using System.Text.Json.Serialization;
+
 
 namespace HoldemOddsAPI.Models
 {
     public class PokerTable
     {
-        public List<Player> Players {get; private set;}
-        public Deck Deck { get; internal set;}
-        public List<Card> CommunityCards { get; private set;}
-        public int Pot { get; internal set;}
+        [JsonPropertyName("players")]
+        public List<Player> Players {get; set;}
+
+        [JsonPropertyName("deck")]
+        public Deck Deck { get; set;}
+
+        [JsonPropertyName("communityCards")]
+        public List<Card> CommunityCards { get; set;}
+
+        [JsonPropertyName("pot")]
+        public int Pot { get; set;}
 
         public PokerTable()
         {
