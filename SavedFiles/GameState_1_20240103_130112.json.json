@@ -1,0 +1,281 @@
+{
+  "players": [
+    {
+      "Id": "4fb45362-437b-4bb5-92cf-7b666aa76890",
+      "Name": "Sky",
+      "CurrentHand": null,
+      "ChipCount": 1000,
+      "IsFolded": false
+    },
+    {
+      "Id": "6baeceaa-7bdc-4d69-8a4c-5a5e8ee0a447",
+      "Name": "Dallas",
+      "CurrentHand": null,
+      "ChipCount": 1000,
+      "IsFolded": false
+    },
+    {
+      "Id": "aa39d151-21a3-4c22-a4c8-9d36584aa63a",
+      "Name": "Avery",
+      "CurrentHand": null,
+      "ChipCount": 1000,
+      "IsFolded": false
+    },
+    {
+      "Id": "fd836c8b-83a8-4cd1-b475-402e124457cc",
+      "Name": "Sky",
+      "CurrentHand": null,
+      "ChipCount": 1000,
+      "IsFolded": false
+    },
+    {
+      "Id": "f3d1a37c-bb1b-4573-b759-3d6fb531b7d8",
+      "Name": "Skyler",
+      "CurrentHand": null,
+      "ChipCount": 1000,
+      "IsFolded": false
+    },
+    {
+      "Id": "8ad0812e-fcc6-4b43-8e5f-eea4d7546eaf",
+      "Name": "Jamie",
+      "CurrentHand": null,
+      "ChipCount": 1000,
+      "IsFolded": false
+    },
+    {
+      "Id": "4b8e4166-77e1-4191-ad87-99aea782fcab",
+      "Name": "Chris",
+      "CurrentHand": null,
+      "ChipCount": 1000,
+      "IsFolded": false
+    },
+    {
+      "Id": "2863c785-9580-4f9f-8b2a-b79940c7fefb",
+      "Name": "Lee",
+      "CurrentHand": null,
+      "ChipCount": 1000,
+      "IsFolded": false
+    },
+    {
+      "Id": "b61e4ba4-ec3d-4ab4-b7fe-0a0089cdce8a",
+      "Name": "Finley",
+      "CurrentHand": null,
+      "ChipCount": 1000,
+      "IsFolded": false
+    }
+  ],
+  "deck": {
+    "Cards": [
+      {
+        "Suit": 0,
+        "Rank": 12
+      },
+      {
+        "Suit": 2,
+        "Rank": 5
+      },
+      {
+        "Suit": 3,
+        "Rank": 3
+      },
+      {
+        "Suit": 1,
+        "Rank": 14
+      },
+      {
+        "Suit": 2,
+        "Rank": 3
+      },
+      {
+        "Suit": 3,
+        "Rank": 6
+      },
+      {
+        "Suit": 2,
+        "Rank": 9
+      },
+      {
+        "Suit": 0,
+        "Rank": 9
+      },
+      {
+        "Suit": 1,
+        "Rank": 5
+      },
+      {
+        "Suit": 3,
+        "Rank": 13
+      },
+      {
+        "Suit": 2,
+        "Rank": 11
+      },
+      {
+        "Suit": 1,
+        "Rank": 8
+      },
+      {
+        "Suit": 3,
+        "Rank": 10
+      },
+      {
+        "Suit": 0,
+        "Rank": 13
+      },
+      {
+        "Suit": 3,
+        "Rank": 11
+      },
+      {
+        "Suit": 0,
+        "Rank": 3
+      },
+      {
+        "Suit": 1,
+        "Rank": 9
+      },
+      {
+        "Suit": 3,
+        "Rank": 7
+      },
+      {
+        "Suit": 0,
+        "Rank": 14
+      },
+      {
+        "Suit": 2,
+        "Rank": 12
+      },
+      {
+        "Suit": 0,
+        "Rank": 4
+      },
+      {
+        "Suit": 0,
+        "Rank": 6
+      },
+      {
+        "Suit": 0,
+        "Rank": 8
+      },
+      {
+        "Suit": 1,
+        "Rank": 4
+      },
+      {
+        "Suit": 2,
+        "Rank": 13
+      },
+      {
+        "Suit": 2,
+        "Rank": 6
+      },
+      {
+        "Suit": 0,
+        "Rank": 2
+      },
+      {
+        "Suit": 1,
+        "Rank": 3
+      },
+      {
+        "Suit": 0,
+        "Rank": 11
+      },
+      {
+        "Suit": 2,
+        "Rank": 10
+      },
+      {
+        "Suit": 1,
+        "Rank": 7
+      },
+      {
+        "Suit": 1,
+        "Rank": 6
+      },
+      {
+        "Suit": 3,
+        "Rank": 5
+      },
+      {
+        "Suit": 1,
+        "Rank": 11
+      },
+      {
+        "Suit": 2,
+        "Rank": 4
+      },
+      {
+        "Suit": 2,
+        "Rank": 2
+      },
+      {
+        "Suit": 0,
+        "Rank": 5
+      },
+      {
+        "Suit": 3,
+        "Rank": 8
+      },
+      {
+        "Suit": 3,
+        "Rank": 14
+      },
+      {
+        "Suit": 1,
+        "Rank": 12
+      },
+      {
+        "Suit": 3,
+        "Rank": 9
+      },
+      {
+        "Suit": 3,
+        "Rank": 2
+      },
+      {
+        "Suit": 0,
+        "Rank": 7
+      },
+      {
+        "Suit": 2,
+        "Rank": 7
+      },
+      {
+        "Suit": 1,
+        "Rank": 10
+      },
+      {
+        "Suit": 3,
+        "Rank": 12
+      },
+      {
+        "Suit": 1,
+        "Rank": 2
+      },
+      {
+        "Suit": 1,
+        "Rank": 13
+      },
+      {
+        "Suit": 2,
+        "Rank": 8
+      },
+      {
+        "Suit": 3,
+        "Rank": 4
+      },
+      {
+        "Suit": 0,
+        "Rank": 10
+      },
+      {
+        "Suit": 2,
+        "Rank": 14
+      }
+    ]
+  },
+  "communityCards": [],
+  "pot": 0
+}
