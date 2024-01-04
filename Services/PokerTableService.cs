@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Collections.Generic;
+using HoldemOddsAPI.Helpers;
 
 namespace HoldemOddsAPI.Services
 {
@@ -135,7 +136,8 @@ namespace HoldemOddsAPI.Services
             {
                 PlayerId = player.Id,
                 PlayerName = player.Name,
-                Hand = player.GetFormattedHand()
+                Hand = player.GetFormattedHand(),
+               // HandRank = PokerUtility.GetHandDescription(player.CurrentHandRank)
             });
         }
 
@@ -148,6 +150,26 @@ namespace HoldemOddsAPI.Services
             }
 
             return pokerTable.CommunityCards;
+        }
+
+        public void EvaluatePlayersHand(int gameId)
+        {
+            var pokerTable = _gameState.GetGame(gameId);
+            if (pokerTable == null)
+            {
+                throw new InvalidOperationException("Game not found.");
+            }
+
+            var communityCards = pokerTable.CommunityCards;
+            PokerHandEvaluator handEvaluator = new PokerHandEvaluator();
+
+            foreach (var player in pokerTable.Players)
+            {
+                var playerCards = new List<Card> { player.CurrentHand.Card1, player.CurrentHand.Card2 };
+                var combinedHand = playerCards.Concat(communityCards);
+
+                player.CurrentHandRank = handEvaluator.EvaluateHand(combinedHand);
+            }
         }
 
         public void UpdateGameWithLoadedState(int gameId, PokerTable loadedPokerTable)

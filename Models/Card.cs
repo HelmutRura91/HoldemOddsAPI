@@ -25,7 +25,8 @@
         Ace = 14
     }
 
-    public class Card
+    //implementing IComperable interface lets me sort a collection of Cards using LINQ, otherwise I should do sth like cards.OrderBy(card => card.Rank).ToList() instead of cards.OrderBy(card => card).ToList(). CompareTo method must be implemented when using IComperable
+    public class Card : IComparable<Card>
     {
         public Suit Suit { get; }
         public Rank Rank { get; }
@@ -38,6 +39,14 @@
         public override string ToString()
         {
             return $"{Rank} of {Suit}";
+        }
+
+        public int CompareTo(Card other)
+        {
+            int rankComparison = this.Rank.CompareTo(other.Rank);
+            if (rankComparison != 0) 
+                return rankComparison;
+            return 0;
         }
     }
 

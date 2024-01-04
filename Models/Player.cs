@@ -1,4 +1,6 @@
-﻿namespace HoldemOddsAPI.Models
+﻿using HoldemOddsAPI.Helpers;
+
+namespace HoldemOddsAPI.Models
 {
     public class Player
     {
@@ -7,6 +9,7 @@
         public Guid Id { get; set; }
         public string Name { get; set; }
         public Hand CurrentHand { get; set; }
+        public PokerHandRank CurrentHandRank { get; set; }
         public int ChipCount { get; set; }
         public bool IsFolded { get; set; }
 
@@ -36,6 +39,13 @@
             CurrentHand = hand;
         }
 
+        public void SetHandRank(PokerHandRank handRank)
+        {
+            if (handRank == null)
+                throw new ArgumentNullException(nameof(handRank));
+            CurrentHandRank = handRank;
+        }
+
         public void Fold()
         {
             IsFolded = true;
@@ -43,7 +53,9 @@
 
         public string GetFormattedHand()
         {
-            return CurrentHand != null ? CurrentHand.ToString() : "Hand not set.";
+            var handDescription = CurrentHand != null ? CurrentHand.ToString() : "Hand not set.";
+            var rankDescription = CurrentHandRank != null ? PokerUtility.GetHandDescription(CurrentHandRank) : "Rank not evaluated";
+            return $"{handDescription} - {rankDescription}";
         }
     }
 }

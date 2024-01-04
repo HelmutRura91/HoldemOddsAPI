@@ -10,7 +10,7 @@ namespace HoldemOddsAPI.Controllers
     [ApiController]
     public class PokerController : ControllerBase
     {
-        //injecting PokerTableService into PokerController constructor
+        //injecting PokerTableService, GameStateService and JsonLogger into PokerController constructor
         private readonly PokerTableService _pokerTableService;
         private readonly GameStateService _gameStateService;
         private readonly JsonLogger _jsonLogger;
@@ -110,6 +110,7 @@ namespace HoldemOddsAPI.Controllers
             try
             {
                 var flopCards = _pokerTableService.DealFlop(gameId);
+                _pokerTableService.EvaluatePlayersHand(gameId);
                 var handsInfo = _pokerTableService.GetFormattedPlayerHands(gameId);
                 return Ok(new
                 {
@@ -131,6 +132,7 @@ namespace HoldemOddsAPI.Controllers
             {
                 var turnCard = _pokerTableService.DealTurn(gameId);
                 var communityCards = _pokerTableService.GetCommunityCards(gameId);
+                _pokerTableService.EvaluatePlayersHand(gameId);
                 var handsInfo = _pokerTableService.GetFormattedPlayerHands(gameId);
                 return Ok(new 
                 { 
@@ -152,6 +154,7 @@ namespace HoldemOddsAPI.Controllers
             {
                 var riverCard = _pokerTableService.DealRiver(gameId);
                 var communityCards = _pokerTableService.GetCommunityCards(gameId);
+                _pokerTableService.EvaluatePlayersHand(gameId);
                 var handsInfo = _pokerTableService.GetFormattedPlayerHands(gameId);
                 return Ok(new 
                 { 
