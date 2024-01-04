@@ -15,14 +15,16 @@ namespace HoldemOddsAPI.Services
         //private readonly PokerTable _pokerTable;
         private readonly GameState _gameState;
         private readonly DeckService _deckService;
+        private readonly PokerHandEvaluator _handEvaluator;
         
         //changed the private field (_IsGameStarted) to a public property with a private setter, so PokerController could read the value
         //public bool IsGameStarted { get; private set; }
 
-        public PokerTableService(GameState gameState, DeckService deckService)
+        public PokerTableService(GameState gameState, DeckService deckService, PokerHandEvaluator handEvaluator)
         {
             _gameState = gameState;
             _deckService = deckService;
+            _handEvaluator = handEvaluator;
         }
 
         public int StartNewGame(int numberOfPlayers)
@@ -161,29 +163,44 @@ namespace HoldemOddsAPI.Services
             }
 
             var communityCards = pokerTable.CommunityCards;
-            PokerHandEvaluator handEvaluator = new PokerHandEvaluator();
 
             foreach (var player in pokerTable.Players)
             {
                 var playerCards = new List<Card> { player.CurrentHand.Card1, player.CurrentHand.Card2 };
                 var combinedHand = playerCards.Concat(communityCards);
 
-                player.CurrentHandRank = handEvaluator.EvaluateHand(combinedHand);
+                player.CurrentHandRank = _handEvaluator.EvaluateHand(combinedHand);
             }
         }
+
+        public Player DetermineWinningHand(int gameId)
+        {
+            var pokerTable = _gameState.GetGame(gameId);
+            if(pokerTable == null)
+            {
+                throw new InvalidOperationException("Game not found");
+            }
+
+            Player winningPlayer = null;
+            PokerHandRank winningHandRank = null;
+
+            foreach (var player in pokerTable.Players)
+            {
+                if(!player.IsFolded && (winningPlayer == null || _handEvaluator.CompareHands(player.CurrentHandRank, winningHandRank) > 0))
+                {
+                    winningPlayer = player;
+                    winningHandRank = player.CurrentHandRank;
+                }
+            }
+            //TODO Add condition when tied
+            return winningPlayer;
+        }
+
 
         public void UpdateGameWithLoadedState(int gameId, PokerTable loadedPokerTable)
         {
             _gameState.AddOrUpdateGame(gameId, loadedPokerTable);
         }
-        //public void HandlePlayerAction(Player player, PlayerAction action)
-        //{
-        //    // handle player actions (bet, fold, raise)
-        //}
 
-        //public Player DetermineWinner()
-        //{
-
-        //}
     }
 }

@@ -2,6 +2,7 @@
 
 namespace HoldemOddsAPI.Services
 {
+    
     public class PokerHandEvaluator
     {
         public PokerHandRank EvaluateHand(IEnumerable<Card> cards)
@@ -101,7 +102,7 @@ namespace HoldemOddsAPI.Services
                 var lowAceCards = sortedCards.Select(card => card.Rank == Rank.Ace ? new Card(card.Suit, Rank.Two - 1) : card).ToList();
                 if (IsSequential(lowAceCards))
                 {
-                    bestHand = lowAceCards.Take(5);
+                    bestHand = sortedCards.Take(5);
                     return true;
                 }
             }
@@ -186,14 +187,24 @@ namespace HoldemOddsAPI.Services
 
         private bool IsSequential(List<Card> cards)
         {
-            for(int i = 0; i < cards.Count - 1; i++)
+            int sequentialCount = 0;
+
+            for (int i = 0; i < cards.Count - 1; i++)
             {
-                if (cards[i].Rank - cards[i+1].Rank != 1)
+                if (cards[i].Rank - cards[i + 1].Rank == 1)
                 {
-                    return false;
+                    sequentialCount++;
+                    if (sequentialCount >= 4) // Four comparisons indicating a sequence of five card
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    sequentialCount = 0; // Reset count if sequence is broken
                 }
             }
-            return true;
+            return false;
         }
 
         //    public Dictionary<Guid, double> CalculateWinningProbabilities(PokerTable table, DeckService deckService)
@@ -239,7 +250,7 @@ namespace HoldemOddsAPI.Services
                 if (hand2IsLowAceStraight) return 1;
             }
 
-            return CompareRemainingCards(hand1.Cards, hand2.Cards);
+            return CompareWholeHands(hand1.Cards, hand2.Cards);
         }
 
         private bool IsLowerAceStraight(IEnumerable<Card> cards)
@@ -247,14 +258,17 @@ namespace HoldemOddsAPI.Services
             return cards.Any(card => card.Rank == Rank.Ace) && cards.Any(card => card.Rank == Rank.Two);
         }
 
-        private int CompareRemainingCards(IEnumerable<Card> hand1,  IEnumerable<Card> hand2)
+        private int CompareWholeHands(IEnumerable<Card> hand1,  IEnumerable<Card> hand2)
         {
-            var sortedHand1 = hand1.OrderByDescending(c => c).ToList();
-            var sortedHand2 = hand1.OrderByDescending(c => c).ToList();
+            //EvaluateHand gives the PokerHandRank sorted in a specific way -> set cards are first, then kickers in descending way, so we mustn't perform sorting here
+            //var sortedHand1 = hand1.OrderByDescending(c => c).ToList();
+            //var sortedHand2 = hand2.OrderByDescending(c => c).ToList();
+            var hand1List = hand1.ToList();
+            var hand2List = hand2.ToList();
 
-            for(int i =0; i < sortedHand1.Count; i++)
+            for(int i =0; i < hand1List.Count; i++)
             {
-                int comparison = sortedHand1[i].CompareTo(sortedHand2[i]);
+                int comparison = hand1List[i].CompareTo(hand2List[i]);
                 if (comparison != 0)
                 {
                     return comparison;

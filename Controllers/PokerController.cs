@@ -2,6 +2,7 @@
 using HoldemOddsAPI.Models;
 using HoldemOddsAPI.Services;
 using System.Text.Json;
+using HoldemOddsAPI.Helpers;
 
 namespace HoldemOddsAPI.Controllers
 {
@@ -112,9 +113,15 @@ namespace HoldemOddsAPI.Controllers
                 var flopCards = _pokerTableService.DealFlop(gameId);
                 _pokerTableService.EvaluatePlayersHand(gameId);
                 var handsInfo = _pokerTableService.GetFormattedPlayerHands(gameId);
+                var winningPlayer = _pokerTableService.DetermineWinningHand(gameId);
                 return Ok(new
                 {
                     Flop = flopCards.Select(c => c.ToString()),
+                    CurrentWinner = winningPlayer != null ? new
+                    {
+                        PlayerName = winningPlayer.Name,
+                        WinningHand = winningPlayer.GetFormattedHand()
+                    } : null,
                     Hands = handsInfo
                 });
             }
@@ -134,9 +141,15 @@ namespace HoldemOddsAPI.Controllers
                 var communityCards = _pokerTableService.GetCommunityCards(gameId);
                 _pokerTableService.EvaluatePlayersHand(gameId);
                 var handsInfo = _pokerTableService.GetFormattedPlayerHands(gameId);
+                var winningPlayer = _pokerTableService.DetermineWinningHand(gameId);
                 return Ok(new 
                 { 
                     CommunityCards = communityCards.Select(c=>c.ToString()),
+                    CurrentWinner = winningPlayer != null ? new
+                    {
+                        PlayerName = winningPlayer.Name,
+                        WinningHand = winningPlayer.GetFormattedHand()
+                    } : null,
                     Hands = handsInfo                
                 });
             }
@@ -156,9 +169,15 @@ namespace HoldemOddsAPI.Controllers
                 var communityCards = _pokerTableService.GetCommunityCards(gameId);
                 _pokerTableService.EvaluatePlayersHand(gameId);
                 var handsInfo = _pokerTableService.GetFormattedPlayerHands(gameId);
+                var winningPlayer = _pokerTableService.DetermineWinningHand(gameId);
                 return Ok(new 
                 { 
                     CommunityCards = communityCards.Select(c=>c.ToString()),
+                    Winner = winningPlayer != null ? new
+                    {
+                        PlayerName = winningPlayer.Name,
+                        WinningHand = winningPlayer.GetFormattedHand()
+                    } : null,
                     Hands = handsInfo
                 });
             }
