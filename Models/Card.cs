@@ -1,4 +1,6 @@
-﻿namespace HoldemOddsAPI.Models
+﻿using System.Text.Json.Serialization;
+
+namespace HoldemOddsAPI.Models
 {
     public enum Suit
     {
@@ -36,6 +38,14 @@
             Suit = suit;
             Rank = rank;
         }
+        //TODO REVIEW -> this constructor was used when I tried to deserialize json to PokerTable and to get all the info, but I failed
+        [JsonConstructor]
+        public Card(string suit, string rank)
+        {
+            Suit = ConvertStringToSuit(suit);
+            Rank = ConvertStringToRank(rank);
+        }
+
         public override string ToString()
         {
             return $"{Rank} of {Suit}";
@@ -47,6 +57,40 @@
             if (rankComparison != 0) 
                 return rankComparison;
             return 0;
+        }
+
+        //TODO -> REVIEW These were helper methods 
+        private Suit ConvertStringToSuit(string suitString)
+        {
+            return suitString switch
+            {
+                "Hearts" => Suit.Hearts,
+                "Diamonds" => Suit.Diamonds,
+                "Clubs" => Suit.Clubs,
+                "Spades" => Suit.Spades,
+                _ => throw new ArgumentException("Invalid suit value")
+            };
+        }
+
+        private Rank ConvertStringToRank(string rankString)
+        {
+            return rankString switch
+            {
+                "Two" => Rank.Two,
+                "Three" => Rank.Three,
+                "Four" => Rank.Four,
+                "Five" => Rank.Five,
+                "Six" => Rank.Six,
+                "Seven" => Rank.Seven,
+                "Eight" => Rank.Eight,
+                "Nine" => Rank.Nine,
+                "Ten" => Rank.Ten,
+                "Jack" => Rank.Jack,
+                "Queen" => Rank.Queen,
+                "King" => Rank.King,
+                "Ace" => Rank.Ace,
+                _ => throw new ArgumentException("Invalid rank value")
+            };
         }
     }
 

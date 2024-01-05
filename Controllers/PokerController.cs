@@ -3,6 +3,7 @@ using HoldemOddsAPI.Models;
 using HoldemOddsAPI.Services;
 using System.Text.Json;
 using HoldemOddsAPI.Helpers;
+using HoldemOddsAPI.DataTransferObjects;
 
 namespace HoldemOddsAPI.Controllers
 {
@@ -42,6 +43,21 @@ namespace HoldemOddsAPI.Controllers
             }
         }
 
+        [HttpPost("load-game")]
+        public async Task<IActionResult> LoadGameFromUrl([FromBody] LoadGameRequest request)
+        {
+            try
+            {
+                var response = await _gameStateService.LoadGameFromUrl(request.Url);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _jsonLogger.LogError(ex);
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost("save-game/{gameId}")]
         public IActionResult SaveGame(int gameId)
         {
@@ -62,7 +78,7 @@ namespace HoldemOddsAPI.Controllers
         }
 
         [HttpPost("load-game/{gameId}")]
-        public IActionResult LoadGame(int gameId, [FromBody] PokerTable pokerTable)
+        public IActionResult LoadGameFromGameId(int gameId, [FromBody] PokerTable pokerTable)
         {
             try
             {

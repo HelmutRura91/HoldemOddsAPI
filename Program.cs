@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 
 using HoldemOddsAPI.Models;
 using HoldemOddsAPI.Services;
+using System.Text.Json;
 
 namespace HoldemOddsAPI
 {
@@ -19,6 +20,12 @@ namespace HoldemOddsAPI
             builder.Services.AddSingleton<GameState>();
             builder.Services.AddTransient<PokerHandEvaluator>();
             builder.Services.AddSingleton<JsonLogger>(provider => new JsonLogger(@"C:\Users\npotu\source\repos\HoldemOddsAPI\Logs\logfile.json"));
+
+            builder.Services.AddHttpClient();
+            builder.Services.AddSingleton(new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            });
 
             var app = builder.Build();
 
