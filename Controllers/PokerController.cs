@@ -128,7 +128,8 @@ namespace HoldemOddsAPI.Controllers
             {
                 var flopCards = _pokerTableService.DealFlop(gameId);
                 _pokerTableService.EvaluatePlayersHand(gameId);
-                var handsInfo = _pokerTableService.GetFormattedPlayerHands(gameId);
+                var winningProbabilities = _pokerTableService.CalculateWinningProbabilities(gameId);
+                var handsInfoWithProbabilities = _pokerTableService.GetFormattedPlayerHandsWithProbabilities(gameId, winningProbabilities);
                 var winningPlayer = _pokerTableService.DetermineWinningHand(gameId);
                 return Ok(new
                 {
@@ -138,7 +139,7 @@ namespace HoldemOddsAPI.Controllers
                         PlayerName = winningPlayer.Name,
                         WinningHand = winningPlayer.GetFormattedHand()
                     } : null,
-                    Hands = handsInfo
+                    Hands = handsInfoWithProbabilities
                 });
             }
             catch (Exception ex)
@@ -156,7 +157,8 @@ namespace HoldemOddsAPI.Controllers
                 var turnCard = _pokerTableService.DealTurn(gameId);
                 var communityCards = _pokerTableService.GetCommunityCards(gameId);
                 _pokerTableService.EvaluatePlayersHand(gameId);
-                var handsInfo = _pokerTableService.GetFormattedPlayerHands(gameId);
+                var winningProbabilities = _pokerTableService.CalculateWinningProbabilities(gameId);
+                var handsInfoWithProbabilities = _pokerTableService.GetFormattedPlayerHandsWithProbabilities(gameId, winningProbabilities);
                 var winningPlayer = _pokerTableService.DetermineWinningHand(gameId);
                 return Ok(new 
                 { 
@@ -166,7 +168,7 @@ namespace HoldemOddsAPI.Controllers
                         PlayerName = winningPlayer.Name,
                         WinningHand = winningPlayer.GetFormattedHand()
                     } : null,
-                    Hands = handsInfo                
+                    Hands = handsInfoWithProbabilities                
                 });
             }
             catch (Exception ex)

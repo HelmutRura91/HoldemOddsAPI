@@ -57,5 +57,11 @@ namespace HoldemOddsAPI.Models
             var rankDescription = CurrentHandRank != null ? PokerUtility.GetHandDescription(CurrentHandRank) : "Rank not evaluated";
             return $"{handDescription} - {rankDescription}";
         }
+
+        public Player Clone()
+        {
+            return new Player(Id, Name, new Hand(CurrentHand.Card1, CurrentHand.Card2), ChipCount, IsFolded);
+        }
+
     }
 }
