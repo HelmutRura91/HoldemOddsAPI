@@ -5,6 +5,8 @@ using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Collections.Generic;
 using HoldemOddsAPI.Helpers;
+using System.Xml.Linq;
+using System;
 
 namespace HoldemOddsAPI.Services
 {
@@ -29,6 +31,7 @@ namespace HoldemOddsAPI.Services
 
         public int StartNewGame(int numberOfPlayers)
         {
+
             if (numberOfPlayers < 2 || numberOfPlayers > 9)
             {
                 throw new ArgumentException("Number of players must be between 2 and 9.");
@@ -36,22 +39,16 @@ namespace HoldemOddsAPI.Services
 
             int gameId = _gameState.CreateNewGame();
             var pokerTable = _gameState.GetGame(gameId);
-
-            pokerTable.Deck = new Deck();
             _deckService.InitializeDeck(pokerTable.Deck);
             pokerTable.Deck.Shuffle();
-            pokerTable.Players.Clear();
-            pokerTable.CommunityCards.Clear();
-            pokerTable.Pot = 0;
 
-            for(int i= 0; i < numberOfPlayers; i++)
+            Random random = new Random();
+            for (int i = 0; i < numberOfPlayers; i++)
             {
-                pokerTable.Players.Add(new Player());
+                pokerTable.Players.Add(new Player { Id = Guid.NewGuid(), Name = PlayerNames.Names[random.Next(PlayerNames.Names.Count)], ChipCount = 1000, IsFolded = false });
             }
-
             _gameState.AddOrUpdateGame(gameId, pokerTable);
             return gameId;
-
         }
 
         public Dictionary<Player, Hand> DealInitialHands(int gameId)

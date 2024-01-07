@@ -18,11 +18,6 @@
         public HandRank Rank { get; set; }
         public List<Card> Cards { get; set; }
 
-        public PokerHandRank(HandRank rank, List<Card> cards)
-        {
-            Rank = rank;
-            Cards = cards;
-        }
     }
 
 }

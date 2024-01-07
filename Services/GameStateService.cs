@@ -1,6 +1,9 @@
 ﻿using HoldemOddsAPI.DataTransferObjects;
 using HoldemOddsAPI.Models;
+using Microsoft.AspNetCore.Http.Json;
+using Microsoft.Extensions.Options;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace HoldemOddsAPI.Services
 {
@@ -10,13 +13,13 @@ namespace HoldemOddsAPI.Services
         private readonly HttpClient _httpClient;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public GameStateService(GameState gameState, HttpClient httpClient, JsonSerializerOptions jsonSerializerOptions)
+        public GameStateService(GameState gameState, HttpClient httpClient)
         {
             _gameState = gameState;
             _httpClient = httpClient ?? new HttpClient();
-            _jsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions 
-            { 
-                PropertyNameCaseInsensitive = true,
+            _jsonSerializerOptions = new JsonSerializerOptions
+            {
+                Converters = { new JsonStringEnumConverter() },
                 AllowTrailingCommas = true,
             };
         }
@@ -60,92 +63,70 @@ namespace HoldemOddsAPI.Services
             var json = await response.Content.ReadAsStringAsync();
             //Console.WriteLine(json);
 
-            // Step 2: Deserialize JSON to player data
-            List<Player> players = new List<Player>();
-            var jsonDocOptions = new JsonDocumentOptions
-            {
-                AllowTrailingCommas = true,
-            };
-            using (var doc = JsonDocument.Parse(json, jsonDocOptions))
-            {
-                var playersJson = doc.RootElement.GetProperty("players").EnumerateArray();
-                foreach (var playerJson in playersJson)
-                {
-                    string name = "";
-                    int chipCount = 0;
-
-                    if(playerJson.TryGetProperty("Name", out JsonElement nameElement))
-                    {
-                        name = nameElement.GetString();
-                    }
-
-                    if (playerJson.TryGetProperty("ChipCount", out JsonElement chipCountElement))
-                    {
-                        chipCount = chipCountElement.GetInt32();
-                    }
-
-
-                    var player = new Player()
-                    {
-                        Name = name,
-                        ChipCount = chipCount
-                        //TODO REVIEW Using GetProperty didn't work -> probably because it it tried to access properties in the JSON that didn't exist
-                        //Name = playerJson.GetProperty("Name").GetString(),
-                        //ChipCount = playerJson.GetProperty("ChipCount").GetInt32()
-                    };
-                    players.Add(player);
-                }
-            }
-            //I couldn't resolve problems with deserializing cards -> I got enums and in Json there are strings, 
-            //ERROR MSG:Each parameter in the deserialization constructor on type 'HoldemOddsAPI.Models.Card' must bind to an object property or field on deserialization. Each parameter name must match with a property or field on the object. Fields are only considered when 'JsonSerializerOptions.IncludeFields' is enabled. The match can be case-insensitive.
-            //var pokerTable = JsonSerializer.Deserialize<PokerTable>(json, _jsonSerializerOptions);
+            // Step 2: Deserialize JSON to PokerTable Data
+            PokerTable pokerTable = JsonSerializer.Deserialize<PokerTable>(json, _jsonSerializerOptions);
 
             // Step 3: Process PokerTable data
-            var highestStack = FindHighestStack(players);
-            var lowestStack = FindLowestStack(players);
-
-            int entryStackThreshold = 1000;
-            var (playersAboveEntryStack, playersBehindEntryStack) = CategorizePlayers(players, entryStackThreshold);
+            int entryStack = FindStartingStack(pokerTable);
+            var (playersAboveEntryStack, playersBehindEntryStack) = CategorizePlayers(pokerTable, entryStack);
 
             return new LoadGameResponse
             {
-                HighestStack = highestStack,
-                LowestStack = lowestStack,
+                HighestStack = FindHighestStack(pokerTable),
+                LowestStack = FindLowestStack(pokerTable),
+                EntryStack = entryStack,
                 ListOfPlayersAboveEntryStack = playersAboveEntryStack,
-                ListOfPlayersBehindEntryStack = playersBehindEntryStack
+                ListOfPlayersBehindEntryStack = playersBehindEntryStack,
+                SuperFolksCount = FindSuperFolksCount(pokerTable)
             };
 
         }
-
-        private PlayerStackInfo FindHighestStack(List<Player> players)
+        private int FindStartingStack(PokerTable pokerTable)
         {
-            return players
+            int totalStack = pokerTable.Players.Sum(player => player.ChipCount);
+            int startingStack = totalStack / pokerTable.Players.Count();
+            return startingStack;
+        }
+
+        private PlayerStackInfo FindHighestStack(PokerTable pokerTable)
+        {
+            return pokerTable.Players
                 .Select(player => new PlayerStackInfo { Name = player.Name, Value = player.ChipCount })
                 .OrderByDescending(info => info.Value)
                 .FirstOrDefault();
         }
 
-        private PlayerStackInfo FindLowestStack(List<Player> players)
+        private PlayerStackInfo FindLowestStack(PokerTable pokerTable)
         {
-            return players
+            return pokerTable.Players
                 .Select(player => new PlayerStackInfo { Name = player.Name, Value = player.ChipCount })
                 .OrderBy(info => info.Value)
                 .FirstOrDefault();
         }
 
-        private (List<string>, List<string>) CategorizePlayers(List<Player> players, int entryStackThreshold)
+        private (List<string>, List<string>) CategorizePlayers(PokerTable pokerTable, int entryStack)
         {
-            var playersAbove = players
-                .Where(player => player.ChipCount > entryStackThreshold)
+            var playersAbove = pokerTable.Players
+                .Where(player => player.ChipCount > entryStack)
                 .Select(player => player.Name)
                 .ToList();
 
-            var playerBelow = players
-                .Where(player => player.ChipCount <= entryStackThreshold)
+            var playerBelow = pokerTable.Players
+                .Where(player => player.ChipCount <= entryStack)
                 .Select(player => player.Name)
                 .ToList();
 
             return(playersAbove, playerBelow);
+        }
+
+        //superFolks are Players that plays a hand of 2,7 offsuit
+        private int FindSuperFolksCount(PokerTable pokerTable)
+        {
+            var superFolksCount = pokerTable.Players.Count(player =>
+            player?.CurrentHand?.Card1 != null && player?.CurrentHand?.Card2 != null &&
+            ((player.CurrentHand.Card1.Rank == Rank.Two && player.CurrentHand.Card2.Rank == Rank.Seven) || (player.CurrentHand.Card1.Rank == Rank.Seven && player.CurrentHand.Card2.Rank == Rank.Two)) && (player.CurrentHand.Card1.Suit != player.CurrentHand.Card2.Suit));
+            
+            return superFolksCount;
         }
     }
 }

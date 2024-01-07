@@ -14,7 +14,7 @@ namespace HoldemOddsAPI.Services
         public int CreateNewGame()
         {
             int gameId = _nextGameId++;
-            var pokerTable = new PokerTable();
+            var pokerTable = new PokerTable { Players = new List<Player>(), Deck = new Deck(), CommunityCards = new List<Card>(), Pot = new int() };
             ActiveGames[gameId] = pokerTable;
             return gameId;
         }

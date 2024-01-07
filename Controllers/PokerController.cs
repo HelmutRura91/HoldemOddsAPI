@@ -211,9 +211,9 @@ namespace HoldemOddsAPI.Controllers
         {
             try
             {
-                var card1 = new Card(suit1, rank1);
-                var card2 = new Card(suit2, rank2);
-                var hand = new Hand(card1, card2);
+                var card1 = new Card { Suit = suit1, Rank = rank1 };
+                var card2 = new Card{ Suit = suit2, Rank = rank2 };
+                var hand = new Hand { Card1 = card1, Card2 = card2 };
                 return Ok(hand.ToString());
             }
             catch (Exception ex)

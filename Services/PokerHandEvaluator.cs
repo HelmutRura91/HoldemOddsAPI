@@ -8,35 +8,35 @@ namespace HoldemOddsAPI.Services
         public PokerHandRank EvaluateHand(IEnumerable<Card> cards)
         {
             if (IsRoyalFlush(cards, out var royalFlushHand))
-                return new PokerHandRank(HandRank.RoyalFlush, royalFlushHand.ToList());
+                return new PokerHandRank { Rank = HandRank.RoyalFlush, Cards = royalFlushHand.ToList() };
 
             if (IsStraightFlush(cards, out var straightFlushHand))
-                return new PokerHandRank(HandRank.StraightFlush, straightFlushHand.ToList());
+                return new PokerHandRank{ Rank = HandRank.StraightFlush, Cards = straightFlushHand.ToList() };
 
             if (IsFourOfAKind(cards, out var fourOfAKindHand))
-                return new PokerHandRank(HandRank.FourOfAKind, fourOfAKindHand.ToList());
+                return new PokerHandRank{ Rank = HandRank.FourOfAKind, Cards = fourOfAKindHand.ToList() };
 
             if (IsFullHouse(cards, out var fullHouseHand))
-                return new PokerHandRank(HandRank.FullHouse, fullHouseHand.ToList());
+                return new PokerHandRank{ Rank = HandRank.FullHouse, Cards = fullHouseHand.ToList() };
 
             if (IsFlush(cards, out var flushHand))
-                return new PokerHandRank(HandRank.Flush, flushHand.ToList());
+                return new PokerHandRank{ Rank = HandRank.Flush, Cards = flushHand.ToList() };
 
             if (IsStraight(cards, out var straightHand))
-                return new PokerHandRank(HandRank.Straight, straightHand.ToList());
+                return new PokerHandRank{ Rank = HandRank.Straight, Cards = straightHand.ToList() };
 
             if (IsThreeOfAKind(cards, out var threeOfAKindHand))
-                return new PokerHandRank(HandRank.ThreeOfAKind, threeOfAKindHand.ToList());
+                return new PokerHandRank{ Rank = HandRank.ThreeOfAKind, Cards = threeOfAKindHand.ToList() };
 
             if (IsTwoPair(cards, out var twoPairHand))
-                return new PokerHandRank(HandRank.TwoPair, twoPairHand.ToList());
+                return new PokerHandRank{ Rank = HandRank.TwoPair, Cards = twoPairHand.ToList() };
 
             if (IsPair(cards, out var pairHand))
-                return new PokerHandRank(HandRank.Pair, pairHand.ToList());
+                return new PokerHandRank{ Rank = HandRank.Pair, Cards = pairHand.ToList() };
 
             // Default to High Card if no other hand is formed
             var sortedCards = cards.OrderByDescending(card => card.Rank).ToList();
-            return new PokerHandRank(HandRank.HighCard, sortedCards);
+            return new PokerHandRank{ Rank = HandRank.HighCard, Cards = sortedCards };
         }
 
         public bool IsPair(IEnumerable<Card> cards, out IEnumerable<Card> bestHand)
@@ -99,7 +99,7 @@ namespace HoldemOddsAPI.Services
             //Check for Low Ace straight (Ace acting as '1')
             if (sortedCards.Any(card => card.Rank == Rank.Ace))
             {
-                var lowAceCards = sortedCards.Select(card => card.Rank == Rank.Ace ? new Card(card.Suit, Rank.Two - 1) : card).ToList();
+                var lowAceCards = sortedCards.Select(card => card.Rank == Rank.Ace ? new Card { Suit = card.Suit, Rank = Rank.Two - 1 } : card).ToList();
                 if (IsSequential(lowAceCards))
                 {
                     bestHand = sortedCards.Take(5);
