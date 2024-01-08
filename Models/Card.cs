@@ -30,7 +30,7 @@ namespace HoldemOddsAPI.Models
     //implementing IComperable interface lets me sort a collection of Cards using LINQ, otherwise I should do sth like cards.OrderBy(card => card.Rank).ToList() instead of cards.OrderBy(card => card).ToList(). CompareTo method must be implemented when using IComperable
     public class Card : IComparable<Card>
     {
-        public Suit Suit { get; set; }
+        public Suit? Suit { get; set; }
         public Rank Rank { get; set; }
        
         //C# startup API parse String to ENUm

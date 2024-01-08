@@ -16,7 +16,7 @@ namespace HoldemOddsAPI.Models
         public List<Card> CommunityCards { get; set;}
 
         [JsonPropertyName("pot")]
-        public int Pot { get; set;}
+        public int? Pot { get; set;}
 
     }
 }

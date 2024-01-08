@@ -207,31 +207,6 @@ namespace HoldemOddsAPI.Services
             return false;
         }
 
-        //    public Dictionary<Guid, double> CalculateWinningProbabilities(PokerTable table, DeckService deckService)
-        //{
-        //    var remainingDeck = deckService.GetAllCards(table.Deck);
-        //    var currentBestHand = GetCurrentBestHand(table);
-        //    var probabilities = new Dictionary<Guid, double>();
-
-        //    foreach(var player in table.Players)
-        //    {
-        //        int beneficialCards = CountBeneficialCards(player, currentBestHand, remainingDeck);
-        //        probabilities[player.Id] = (double)beneficialCards /remainingDeck.Count;
-        //    }
-
-        //    return probabilities;
-        //}
-
-        //private PokerHandRank GetCurrentBestHand(PokerTable table)
-        //{
-        //    //Evaluate and return the best hand from the current state of the table
-        //}
-
-        //private int CountBeneficialCards(Player player, PokerHandRank currentBestHand, Deck remainingDeck)
-        //{
-        //    //Count how many cards in the remaining deck would improve player's hand to beat the currentBestHand
-        //}
-
         public int CompareHands(PokerHandRank hand1, PokerHandRank hand2)
         {
             if(hand1.Rank != hand2.Rank)
@@ -261,8 +236,6 @@ namespace HoldemOddsAPI.Services
         private int CompareWholeHands(IEnumerable<Card> hand1,  IEnumerable<Card> hand2)
         {
             //EvaluateHand gives the PokerHandRank sorted in a specific way -> set cards are first, then kickers in descending way, so we mustn't perform sorting here
-            //var sortedHand1 = hand1.OrderByDescending(c => c).ToList();
-            //var sortedHand2 = hand2.OrderByDescending(c => c).ToList();
             var hand1List = hand1.ToList();
             var hand2List = hand2.ToList();
 

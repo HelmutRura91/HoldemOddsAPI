@@ -83,25 +83,21 @@ namespace HoldemOddsAPI.Services
         }
         private int FindStartingStack(PokerTable pokerTable)
         {
-            int totalStack = pokerTable.Players.Sum(player => player.ChipCount);
+            int totalStack = (int)pokerTable.Players.Sum(player => player.ChipCount);
             int startingStack = totalStack / pokerTable.Players.Count();
             return startingStack;
         }
 
         private PlayerStackInfo FindHighestStack(PokerTable pokerTable)
         {
-            return pokerTable.Players
-                .Select(player => new PlayerStackInfo { Name = player.Name, Value = player.ChipCount })
-                .OrderByDescending(info => info.Value)
-                .FirstOrDefault();
+            var highestStackPlayer = pokerTable.Players.MaxBy(player => player.ChipCount);
+            return new PlayerStackInfo { Name = highestStackPlayer.Name, Value = (int)highestStackPlayer.ChipCount };
         }
 
         private PlayerStackInfo FindLowestStack(PokerTable pokerTable)
         {
-            return pokerTable.Players
-                .Select(player => new PlayerStackInfo { Name = player.Name, Value = player.ChipCount })
-                .OrderBy(info => info.Value)
-                .FirstOrDefault();
+            var lowestStackPlayer = pokerTable.Players.MinBy(player => player.ChipCount);
+            return new PlayerStackInfo { Name = lowestStackPlayer.Name, Value = (int)lowestStackPlayer.ChipCount };
         }
 
         private (List<string>, List<string>) CategorizePlayers(PokerTable pokerTable, int entryStack)
@@ -120,12 +116,15 @@ namespace HoldemOddsAPI.Services
         }
 
         //superFolks are Players that plays a hand of 2,7 offsuit
+        //assumption - if Card2 has no Suit or Rank, then it duplicates Card1 Suit or Rank
         private int FindSuperFolksCount(PokerTable pokerTable)
         {
-            var superFolksCount = pokerTable.Players.Count(player =>
-            player?.CurrentHand?.Card1 != null && player?.CurrentHand?.Card2 != null &&
-            ((player.CurrentHand.Card1.Rank == Rank.Two && player.CurrentHand.Card2.Rank == Rank.Seven) || (player.CurrentHand.Card1.Rank == Rank.Seven && player.CurrentHand.Card2.Rank == Rank.Two)) && (player.CurrentHand.Card1.Suit != player.CurrentHand.Card2.Suit));
-            
+            var superFolksCount = pokerTable.Players
+                .Count(player => ((player?.CurrentHand?.Card1?.Rank == Rank.Two && player?.CurrentHand?.Card2?.Rank == Rank.Seven)
+                || (player?.CurrentHand?.Card1?.Rank == Rank.Seven && player?.CurrentHand?.Card2?.Rank == Rank.Two))
+                && (player?.CurrentHand?.Card1?.Suit != player?.CurrentHand?.Card2?.Suit)
+                && player?.CurrentHand?.Card2?.Suit != null);
+
             return superFolksCount;
         }
     }
