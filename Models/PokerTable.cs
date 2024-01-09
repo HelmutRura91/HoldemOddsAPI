@@ -18,12 +18,5 @@ namespace HoldemOddsAPI.Models
         [JsonPropertyName("pot")]
         public int Pot { get; set;}
 
-        public PokerTable()
-        {
-            Players = new List<Player>();
-            Deck = new Deck();
-            CommunityCards = new List<Card>();
-            Pot = 0;
-        }
     }
 }

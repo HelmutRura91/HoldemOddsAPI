@@ -2,6 +2,8 @@
 using HoldemOddsAPI.Models;
 using HoldemOddsAPI.Services;
 using System.Text.Json;
+using HoldemOddsAPI.Helpers;
+using HoldemOddsAPI.DataTransferObjects;
 
 namespace HoldemOddsAPI.Controllers
 {
@@ -10,7 +12,7 @@ namespace HoldemOddsAPI.Controllers
     [ApiController]
     public class PokerController : ControllerBase
     {
-        //injecting PokerTableService into PokerController constructor
+        //injecting PokerTableService, GameStateService and JsonLogger into PokerController constructor
         private readonly PokerTableService _pokerTableService;
         private readonly GameStateService _gameStateService;
         private readonly JsonLogger _jsonLogger;
@@ -41,6 +43,21 @@ namespace HoldemOddsAPI.Controllers
             }
         }
 
+        [HttpPost("load-game")]
+        public async Task<IActionResult> LoadGameFromUrl([FromBody] LoadGameRequest request)
+        {
+            try
+            {
+                var response = await _gameStateService.LoadGameFromUrl(request.Url);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _jsonLogger.LogError(ex);
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost("save-game/{gameId}")]
         public IActionResult SaveGame(int gameId)
         {
@@ -61,7 +78,7 @@ namespace HoldemOddsAPI.Controllers
         }
 
         [HttpPost("load-game/{gameId}")]
-        public IActionResult LoadGame(int gameId, [FromBody] PokerTable pokerTable)
+        public IActionResult LoadGameFromGameId(int gameId, [FromBody] PokerTable pokerTable)
         {
             try
             {
@@ -110,11 +127,19 @@ namespace HoldemOddsAPI.Controllers
             try
             {
                 var flopCards = _pokerTableService.DealFlop(gameId);
-                var handsInfo = _pokerTableService.GetFormattedPlayerHands(gameId);
+                _pokerTableService.EvaluatePlayersHand(gameId);
+                var winningProbabilities = _pokerTableService.CalculateWinningProbabilities(gameId);
+                var handsInfoWithProbabilities = _pokerTableService.GetFormattedPlayerHandsWithProbabilities(gameId, winningProbabilities);
+                var winningPlayer = _pokerTableService.DetermineWinningHand(gameId);
                 return Ok(new
                 {
                     Flop = flopCards.Select(c => c.ToString()),
-                    Hands = handsInfo
+                    CurrentWinner = winningPlayer != null ? new
+                    {
+                        PlayerName = winningPlayer.Name,
+                        WinningHand = winningPlayer.GetFormattedHand()
+                    } : null,
+                    Hands = handsInfoWithProbabilities
                 });
             }
             catch (Exception ex)
@@ -131,11 +156,19 @@ namespace HoldemOddsAPI.Controllers
             {
                 var turnCard = _pokerTableService.DealTurn(gameId);
                 var communityCards = _pokerTableService.GetCommunityCards(gameId);
-                var handsInfo = _pokerTableService.GetFormattedPlayerHands(gameId);
+                _pokerTableService.EvaluatePlayersHand(gameId);
+                var winningProbabilities = _pokerTableService.CalculateWinningProbabilities(gameId);
+                var handsInfoWithProbabilities = _pokerTableService.GetFormattedPlayerHandsWithProbabilities(gameId, winningProbabilities);
+                var winningPlayer = _pokerTableService.DetermineWinningHand(gameId);
                 return Ok(new 
                 { 
                     CommunityCards = communityCards.Select(c=>c.ToString()),
-                    Hands = handsInfo                
+                    CurrentWinner = winningPlayer != null ? new
+                    {
+                        PlayerName = winningPlayer.Name,
+                        WinningHand = winningPlayer.GetFormattedHand()
+                    } : null,
+                    Hands = handsInfoWithProbabilities                
                 });
             }
             catch (Exception ex)
@@ -152,10 +185,17 @@ namespace HoldemOddsAPI.Controllers
             {
                 var riverCard = _pokerTableService.DealRiver(gameId);
                 var communityCards = _pokerTableService.GetCommunityCards(gameId);
+                _pokerTableService.EvaluatePlayersHand(gameId);
                 var handsInfo = _pokerTableService.GetFormattedPlayerHands(gameId);
+                var winningPlayer = _pokerTableService.DetermineWinningHand(gameId);
                 return Ok(new 
                 { 
                     CommunityCards = communityCards.Select(c=>c.ToString()),
+                    Winner = winningPlayer != null ? new
+                    {
+                        PlayerName = winningPlayer.Name,
+                        WinningHand = winningPlayer.GetFormattedHand()
+                    } : null,
                     Hands = handsInfo
                 });
             }
@@ -171,9 +211,9 @@ namespace HoldemOddsAPI.Controllers
         {
             try
             {
-                var card1 = new Card(suit1, rank1);
-                var card2 = new Card(suit2, rank2);
-                var hand = new Hand(card1, card2);
+                var card1 = new Card { Suit = suit1, Rank = rank1 };
+                var card2 = new Card{ Suit = suit2, Rank = rank2 };
+                var hand = new Hand { Card1 = card1, Card2 = card2 };
                 return Ok(hand.ToString());
             }
             catch (Exception ex)
