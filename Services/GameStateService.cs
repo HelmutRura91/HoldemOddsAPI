@@ -1,4 +1,5 @@
-﻿using HoldemOddsAPI.DataTransferObjects;
+﻿using HoldemOddsAPI.Adapters;
+using HoldemOddsAPI.DataTransferObjects;
 using HoldemOddsAPI.Models;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Options;
@@ -63,8 +64,12 @@ namespace HoldemOddsAPI.Services
             var json = await response.Content.ReadAsStringAsync();
             //Console.WriteLine(json);
 
+            // Use PokerTableAdapter
+            PokerTableAdapter adapter = new PokerTableAdapter();
+            PokerTable pokerTable = adapter.DeserializeAndValidate(json, _jsonSerializerOptions);
+
             // Step 2: Deserialize JSON to PokerTable Data
-            PokerTable pokerTable = JsonSerializer.Deserialize<PokerTable>(json, _jsonSerializerOptions);
+            //PokerTable pokerTable = JsonSerializer.Deserialize<PokerTable>(json, _jsonSerializerOptions);
 
             // Step 3: Process PokerTable data
             int entryStack = FindStartingStack(pokerTable);
@@ -91,13 +96,13 @@ namespace HoldemOddsAPI.Services
         private PlayerStackInfo FindHighestStack(PokerTable pokerTable)
         {
             var highestStackPlayer = pokerTable.Players.MaxBy(player => player.ChipCount);
-            return new PlayerStackInfo { Name = highestStackPlayer.Name, Value = (int)highestStackPlayer.ChipCount };
+            return new PlayerStackInfo { Name = highestStackPlayer.Name, Value = highestStackPlayer.ChipCount };
         }
 
         private PlayerStackInfo FindLowestStack(PokerTable pokerTable)
         {
             var lowestStackPlayer = pokerTable.Players.MinBy(player => player.ChipCount);
-            return new PlayerStackInfo { Name = lowestStackPlayer.Name, Value = (int)lowestStackPlayer.ChipCount };
+            return new PlayerStackInfo { Name = lowestStackPlayer.Name, Value = lowestStackPlayer.ChipCount };
         }
 
         private (List<string>, List<string>) CategorizePlayers(PokerTable pokerTable, int entryStack)
@@ -120,10 +125,7 @@ namespace HoldemOddsAPI.Services
         private int FindSuperFolksCount(PokerTable pokerTable)
         {
             var superFolksCount = pokerTable.Players
-                .Count(player => ((player?.CurrentHand?.Card1?.Rank == Rank.Two && player?.CurrentHand?.Card2?.Rank == Rank.Seven)
-                || (player?.CurrentHand?.Card1?.Rank == Rank.Seven && player?.CurrentHand?.Card2?.Rank == Rank.Two))
-                && (player?.CurrentHand?.Card1?.Suit != player?.CurrentHand?.Card2?.Suit)
-                && player?.CurrentHand?.Card2?.Suit != null);
+                .Count(player => !player.CurrentHand.IsSuited() && player.CurrentHand.HasSpecificRanks((Rank)2, (Rank)7));
 
             return superFolksCount;
         }

@@ -8,9 +8,9 @@ namespace HoldemOddsAPI.Models
         
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public Hand? CurrentHand { get; set; }
+        public Hand CurrentHand { get; set; }
         public PokerHandRank CurrentHandRank { get; set; }
-        public int? ChipCount { get; set; }
+        public int ChipCount { get; set; }
         public bool IsFolded { get; set; }
 
         // Parameterless constructor

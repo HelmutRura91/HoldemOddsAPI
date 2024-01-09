@@ -241,7 +241,7 @@ namespace HoldemOddsAPI.Services
 
             for(int i =0; i < hand1List.Count; i++)
             {
-                int comparison = hand1List[i].CompareTo(hand2List[i]);
+                int comparison = hand1List[i].Rank.Value.CompareTo(hand2List[i].Rank.Value);
                 if (comparison != 0)
                 {
                     return comparison;
