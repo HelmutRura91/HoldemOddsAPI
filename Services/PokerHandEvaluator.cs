@@ -50,7 +50,7 @@ namespace HoldemOddsAPI.Services
             if (groupWithPair == null) return false;
 
             var pair = groupWithPair.Take(2);
-            var kickers = cards.Except(pair).OrderByDescending(card => card).Take(3);
+            var kickers = cards.Except(pair).OrderByDescending(card => card.Rank).Take(3);
             bestHand = pair.Concat(kickers);
             return true;
         }
@@ -64,7 +64,7 @@ namespace HoldemOddsAPI.Services
             var remainingCards = cards.Except(firstPairHand.Take(2));
             if(!IsPair(remainingCards, out var secondPairHand)) return false;
 
-            var kicker = remainingCards.Except(secondPairHand.Take(2)).OrderByDescending(card => card).First();
+            var kicker = remainingCards.Except(secondPairHand.Take(2)).OrderByDescending(card => card.Rank).First();
             bestHand = firstPairHand.Take(2).Concat(secondPairHand.Take(2)).Concat(new[] {kicker });
             return true;
         }
@@ -80,7 +80,7 @@ namespace HoldemOddsAPI.Services
             if (groupWithThree == null) return false;
 
             var threeOfAKind = groupWithThree.Take(3);
-            var kickers = cards.Except(threeOfAKind).OrderByDescending(card => card).Take(2);
+            var kickers = cards.Except(threeOfAKind).OrderByDescending(card => card.Rank).Take(2);
             bestHand = threeOfAKind.Concat(kickers);
             return true;
         }

@@ -96,13 +96,13 @@ namespace HoldemOddsAPI.Services
         private PlayerStackInfo FindHighestStack(PokerTable pokerTable)
         {
             var highestStackPlayer = pokerTable.Players.MaxBy(player => player.ChipCount);
-            return new PlayerStackInfo { Name = highestStackPlayer.Name, Value = highestStackPlayer.ChipCount };
+            return new PlayerStackInfo { Name = highestStackPlayer.Name, Value = highestStackPlayer.ChipCount ?? 0 };
         }
 
         private PlayerStackInfo FindLowestStack(PokerTable pokerTable)
         {
             var lowestStackPlayer = pokerTable.Players.MinBy(player => player.ChipCount);
-            return new PlayerStackInfo { Name = lowestStackPlayer.Name, Value = lowestStackPlayer.ChipCount };
+            return new PlayerStackInfo { Name = lowestStackPlayer.Name, Value = lowestStackPlayer.ChipCount ?? 0 };
         }
 
         private (List<string>, List<string>) CategorizePlayers(PokerTable pokerTable, int entryStack)
@@ -125,7 +125,7 @@ namespace HoldemOddsAPI.Services
         private int FindSuperFolksCount(PokerTable pokerTable)
         {
             var superFolksCount = pokerTable.Players
-                .Count(player => !player.CurrentHand.IsSuited() && player.CurrentHand.HasSpecificRanks((Rank)2, (Rank)7));
+                .Count(player => player.CurrentHand != null && !player.CurrentHand.IsSuited() && player.CurrentHand.HasSpecificRanks((Rank)2, (Rank)7));
 
             return superFolksCount;
         }

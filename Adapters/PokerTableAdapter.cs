@@ -32,23 +32,22 @@ namespace HoldemOddsAPI.Adapters
 
             foreach (var player in pokerTable.Players)
             {
-                DuplicateCardPropertiesIfNeeded(player.CurrentHand.Card1, player.CurrentHand.Card2);
+                if (player.CurrentHand != null) DuplicateCardPropertiesIfNeeded(player.CurrentHand.Card1, player.CurrentHand.Card2);
             }
 
             // Validation for Deck and CommunityCards can be added here if needed            
         }
 
-        // Check if player is not null and has Id, Name, CurrentHand, Card1, Card2 and valid chip count
         private bool IsValidPlayer(Player player)
         {
+            player.ChipCount = player.ChipCount ?? 0;
+
             return player != null
                 && !string.IsNullOrWhiteSpace(player.Name)
-                && player.Id != Guid.Empty
-                && player.CurrentHand != null
-                && player.CurrentHand.Card1 != null
-                && player.CurrentHand.Card2 != null
-                && player.ChipCount != null
-                && player.ChipCount > 0;     
+                && player.Id != Guid.Empty;
+                //&& player.CurrentHand != null
+                //&& player.CurrentHand.Card1 != null
+                //&& player.CurrentHand.Card2 != null;     
         }
 
         private void DuplicateCardPropertiesIfNeeded(Card card1, Card card2)
