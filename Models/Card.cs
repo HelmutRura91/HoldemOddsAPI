@@ -1,4 +1,7 @@
-﻿namespace HoldemOddsAPI.Models
+﻿using System.Collections;
+using System.Text.Json.Serialization;
+
+namespace HoldemOddsAPI.Models
 {
     public enum Suit
     {
@@ -25,16 +28,12 @@
         Ace = 14
     }
 
+
     public class Card
     {
-        public Suit Suit { get; }
-        public Rank Rank { get; }
-
-        public Card(Suit suit, Rank rank)
-        {
-            Suit = suit;
-            Rank = rank;
-        }
+        public Suit? Suit { get; set; }
+        public Rank? Rank { get; set; }
+       
         public override string ToString()
         {
             return $"{Rank} of {Suit}";

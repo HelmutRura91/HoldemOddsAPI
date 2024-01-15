@@ -13,7 +13,7 @@ namespace HoldemOddsAPI.Services
                     .Range(0, 4) // Suits
                     .SelectMany(s => Enumerable
                         .Range(2, 13) // Ranks
-                        .Select(r => new Card((Suit)s, (Rank)r)))
+                        .Select(r => new Card { Suit = (Suit)s, Rank = (Rank)r }))
                     .ToList();
         }
         
@@ -25,7 +25,7 @@ namespace HoldemOddsAPI.Services
         {
             if (deck.Cards.Count < 2)
                 throw new InvalidOperationException("Not enough cards to deal a hand.");
-            var hand = new Hand(deck.Cards[0], deck.Cards[1]);
+            var hand = new Hand { Card1 = deck.Cards[0], Card2 = deck.Cards[1] };
             deck.Cards.RemoveRange(0,2);
             return hand;
         }
